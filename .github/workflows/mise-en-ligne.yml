@@ -1,0 +1,24 @@
+name: Mise en ligne artisteaverti.fr
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: mise-en-ligne
+  cancel-in-progress: false
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Traiter la demande déposée dans BAT
+        env:
+          SITE_CLE: ${{ secrets.SITE_CLE }}
+        run: python3 robot/robot.py
