@@ -1,5 +1,8 @@
 name: Mise en ligne artisteaverti.fr
 
+# Le code du robot vit dans BAT (site-artisteaverti/a-publier/robot-depot.tgz) :
+# ce fichier le télécharge à chaque passage, pour qu'on puisse le corriger sans toucher au dépôt.
+
 on:
   schedule:
     - cron: "*/15 * * * *"
@@ -14,11 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - name: Traiter la demande déposée dans BAT
         env:
           SITE_CLE: ${{ secrets.SITE_CLE }}
-        run: python3 robot/robot.py
+        run: |
+          curl -fsS -H "x-site-cle: $SITE_CLE" https://bat.aurelienkremer-pro.workers.dev/m/site-artisteaverti/a-publier/robot-depot.tgz | tar xzf -
+          python3 robot/robot.py
